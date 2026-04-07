@@ -1,0 +1,16 @@
+# virtual environment
+venv/
+.venv/
+
+# env file
+.env
+
+# python cache
+__pycache__/
+*.pyc
+
+# chroma db
+chroma_db/
+
+# temp files
+temp_*.pdf
