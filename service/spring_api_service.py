@@ -1,0 +1,212 @@
+import os
+from typing import Any, Dict, Optional
+
+import requests
+
+class SpringApiService:
+    def __init__(
+        self,
+        base_url: Optional[str] = None,
+        api_key: Optional[str] = None,
+        timeout: int=10
+    ) -> None:
+        self.base_url=(base_url or os.getenv("SPRING_API_BASE_URL","")).rstrip("/")
+        self.api_key=api_key or os.getenv("SPRING_INTERNAL_API_KEY")
+        self.timeout=timeout
+        
+        self.session=requests.Session()
+        
+        default_headers: Dict[str, Any] = {
+            "Accept": "application/json"
+        }
+        
+        if self.api_key:
+            default_headers["X-Internal-API-Key"]=self.api_key
+            
+        self.session.headers.update(default_headers)
+        
+    def get_public_reservation_status(
+        self,
+        department: str,
+        exact_date: Optional[str] = None,
+        date_range: Optional[Dict[str, str]] = None
+    ) -> Dict[str, Any]:
+        endpoint=f"{self.base_url}/chatbot/inqury/reservation"
+        
+        params: Dict[str, Any] = {
+            "department": department
+        }
+        
+        if exact_date:
+            params["date"]=exact_date
+            
+        if date_range:
+            params["startDate"]=date_range.get("start_date")
+            params["endDate"]=date_range.get("end_date")
+            
+        try:
+            response=self.session.get(
+                endpoint,
+                params=params,
+                timeout=self.timeout
+            )
+            
+            response.raise_for_status()
+            
+            payload=response.json()
+            
+            return {
+                "success": True,
+                "data": payload,
+                "summary": self._build_reservation_summary(payload),
+                "queried_endpoint": "/chatbot/inquiry/reservation"
+            }
+            
+        except requests.RequestException as e:
+            return {
+                "success": False,
+                "data": {},
+                "summary": None,
+                "queried_endpoint": "/chatbot/inquiry/reservation",
+                "error": f"spring_api_request_error: {str(e)}"
+            }
+            
+        except ValueError as e:
+            return {
+                "success": False,
+                "data": {},
+                "summary": None,
+                "queried_endpoint": "/api/chatbot/public/reservations",
+                "error": f"spring_api_json_error: {str(e)}"
+            }
+            
+    def get_public_doctor_info(
+        self,
+        department: str,
+        exact_date: Optional[str] = None
+    ) -> Dict[str, Any]:
+        endpoint=f"{self.base_url}/chatbot/inquiry/doctor"
+        
+        params: Dict[str, Any] = {
+            "department": department
+        }
+        
+        if exact_date:
+            params["date"]=exact_date
+            
+        try:
+            response=self.session.get(
+                endpoint,
+                params=params,
+                timeout=self.timeout
+            )
+            
+            response.raise_for_status()
+            
+            payload=response.json()
+            
+            return {
+                "success": True,
+                "data": payload,
+                "summary": self._build_doctor_summary(payload),
+                "queried_endpoint": "/chatbot/inquiry/doctor"
+            }
+            
+        except requests.RequestException as e:
+            return {
+                "success": False,
+                "data": {},
+                "summary": None,
+                "queried_endpoint": "/api/chatbot/public/doctors",
+                "error": f"spring_api_request_error: {str(e)}",
+            }
+            
+        except ValueError as e:
+            return {
+                "success": False,
+                "data": {},
+                "summary": None,
+                "queried_endpoint": "/api/chatbot/public/doctors",
+                "error": f"spring_api_json_error: {str(e)}",
+            }
+            
+    def get_public_department_info(
+        self,
+        department: str
+    ) -> Dict[str, Any]:
+        endpoint=f"{self.base_url}/chatbot/inquiry/department"
+        
+        params: Dict[str, Any] = {
+            "department": department
+        }
+        
+        try:
+            response=self.session.get(
+                endpoint,
+                params=params,
+                timeout=self.timeout
+            )
+            
+            response.raise_for_status()
+            
+            payload=response.json()
+            
+            return {
+                "success": True,
+                "data": payload,
+                "summary": self._build_department_summary(payload),
+                "queried_endpoint": "/api/chatbot/public/departments",
+            }
+            
+        except requests.RequestException as e:
+            return {
+                "success": False,
+                "data": {},
+                "summary": None,
+                "queried_endpoint": "/api/chatbot/public/departments",
+                "error": f"spring_api_request_error: {str(e)}",
+            }
+            
+        except ValueError as e:
+            return {
+                "success": False,
+                "data": {},
+                "summary": None,
+                "queried_endpoint": "/api/chatbot/public/departments",
+                "error": f"spring_api_json_error: {str(e)}",
+            }
+            
+    def _build_reservation_summary(self, payload: Dict[str, Any]) -> Optional[str]:
+        if not payload:
+            return None
+        
+        department=payload.get("department")
+        date=payload.get("date")
+        total_count=payload.get("totalCount")
+        available_count=payload.get("availableCount")
+        
+        parts=[]
+        
+        if department:
+            parts.append(f"진료과: {department}")
+            
+        if date:
+            parts.append(f"기준 날짜: {date}")
+            
+        if total_count is not None:
+            parts.append(f"전체 예약 수: {total_count}")
+            
+        if available_count is not None:
+            parts.append(f"예약 가능 수: {available_count}")
+            
+        return ", ".join(parts) if parts else None
+    
+    def _build_doctor_summary(self, payload: Dict[str, Any]) -> Optional[str]:
+        if not payload:
+            return None
+        
+        department=payload.get("department")
+        doctors=payload.get("doctors", [])
+        
+        if department and isinstance(doctors, list):
+            return f"{department}의 공개 가능한 의사 정보 {len(doctors)}건을 조회했습니다."
