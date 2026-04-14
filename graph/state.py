@@ -7,7 +7,8 @@ BlockType=Literal[
     "SENSITIVE_INFO",
     "PRIVATE_OPERATION_INFO",
     "UNSUPPORTED_REQUEST",
-    "INSUFFICIENT_INFO"
+    "INSUFFICIENT_INFO",
+    "PAST_DATE"
 ]
 SourceType=Literal["PDF", "DB", "BOTH", "NONE"]
 QueryType=Literal[

@@ -59,6 +59,13 @@ def answer_node(state: ChatbotState) -> ChatbotState:
         db_summary=db_result.get("summary")
         db_data=db_result.get("data", {})
         
+    schedule_notice=None
+    
+    if query_type == ["DOCTOR_SCHEDULE", "RESERVATION_STATUS"] and db_data:
+        schedule_published=db_data.get("schedulePublished")
+        if schedule_published is False:
+            schedule_notice="다만 해당 날짜의 의료진 스케쥴이 아직 등록되지 않아 예상 기준으로 안내된 내용일 수 있습니다. 정확한 일정 및 예약 가능 여부는 병원에 직접 문의해 주세요."
+        
     if source_type == "PDF" and (not pdf_result or not pdf_result.get("success")):
         return {
             "answer": "관련 병원 규정 또는 이용 안내 정보를 확인할 수 없어 답변하기 어렵습니다."
@@ -110,8 +117,13 @@ def answer_node(state: ChatbotState) -> ChatbotState:
             ]
         )
         
+        final_answer=str(response.content).strip()
+        
+        if schedule_notice:
+            final_answer=f"{final_answer}\n\n{schedule_notice}"
+        
         return {
-            "answer": str(response.content).strip()
+            "answer": final_answer
         }
         
     except Exception as e:

@@ -1,4 +1,5 @@
 from typing import Literal, Optional
+from datetime import datetime
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
@@ -40,6 +41,12 @@ llm=ChatOpenAI(
 )
 
 structured_llm=llm.with_structured_output(DateResolution)
+
+def _is_past_date(date_str:str, current_datetime:str) -> bool:
+    current_date=datetime.fromisoformat(current_datetime).date()
+    target_date=datetime.fromisoformat(date_str).date()
+    
+    return target_date < current_date
 
 DATE_SYSTEM_PROMPT="""
 너는 병원 챗봇의 날짜 해석가다.
@@ -98,6 +105,32 @@ def date_node(state: ChatbotState) -> ChatbotState:
                 ))
             ]
         )
+        
+        query_type=state.get("query_type")
+        
+        if query_type in ["RESERVATION_STATUS", "DOCTOR_SCHEDULE"]:
+            if decision.resolution_type == "EXACT_DATE" and decision.resolved_date:
+                if _is_past_date(decision.resolved_date, current_datetime):
+                    return {
+                        "allowed_status": "BLOCKED",
+                        "block_type": "PAST_DATE",
+                        "block_reason": "과거 날짜에 대한 예약 및 진료 일정 정보는 제공하지 않습니다.",
+                        "has_date_expression": True,
+                        "resolved_date": None,
+                        "resolved_date_range": None
+                    }
+                    
+            if (decision.resolution_type == "DATE_RANGE" and decision.start_date
+                and decision.end_date):
+                if _is_past_date(decision.end_date, current_datetime):
+                    return {
+                        "allowed_status": "BLOCKED",
+                        "block_type": "PAST_DATE",
+                        "block_reason": "과거 기간에 대한 예약 및 진료 일정 정보는 제공하지 않습니다.",
+                        "has_date_expression": True,
+                        "resolved_date": None,
+                        "resolved_date_range": None
+                    }
         
         if decision.resolution_type=="NONE":
             return {
