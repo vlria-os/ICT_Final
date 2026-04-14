@@ -16,7 +16,7 @@ class SpringApiService:
         
         self.session=requests.Session()
         
-        default_headers: Dict[str, Any] = {
+        default_headers: Dict[str, str] = {
             "Accept": "application/json"
         }
         
@@ -31,7 +31,7 @@ class SpringApiService:
         exact_date: Optional[str] = None,
         date_range: Optional[Dict[str, str]] = None
     ) -> Dict[str, Any]:
-        endpoint=f"{self.base_url}/chatbot/inqury/reservation"
+        endpoint=f"{self.base_url}/chatbot/inquiry/reservation"
         
         params: Dict[str, Any] = {
             "department": department
@@ -76,7 +76,7 @@ class SpringApiService:
                 "success": False,
                 "data": {},
                 "summary": None,
-                "queried_endpoint": "/api/chatbot/public/reservations",
+                "queried_endpoint": "/chatbot/inquiry/reservation",
                 "error": f"spring_api_json_error: {str(e)}"
             }
             
@@ -117,7 +117,7 @@ class SpringApiService:
                 "success": False,
                 "data": {},
                 "summary": None,
-                "queried_endpoint": "/api/chatbot/public/doctors",
+                "queried_endpoint": "/chatbot/inquiry/doctor",
                 "error": f"spring_api_request_error: {str(e)}",
             }
             
@@ -126,7 +126,7 @@ class SpringApiService:
                 "success": False,
                 "data": {},
                 "summary": None,
-                "queried_endpoint": "/api/chatbot/public/doctors",
+                "queried_endpoint": "/chatbot/inquiry/doctor",
                 "error": f"spring_api_json_error: {str(e)}",
             }
             
@@ -155,7 +155,7 @@ class SpringApiService:
                 "success": True,
                 "data": payload,
                 "summary": self._build_department_summary(payload),
-                "queried_endpoint": "/api/chatbot/public/departments",
+                "queried_endpoint": "/chatbot/inquiry/department",
             }
             
         except requests.RequestException as e:
@@ -163,7 +163,7 @@ class SpringApiService:
                 "success": False,
                 "data": {},
                 "summary": None,
-                "queried_endpoint": "/api/chatbot/public/departments",
+                "queried_endpoint": "/chatbot/inquiry/department",
                 "error": f"spring_api_request_error: {str(e)}",
             }
             
@@ -172,7 +172,7 @@ class SpringApiService:
                 "success": False,
                 "data": {},
                 "summary": None,
-                "queried_endpoint": "/api/chatbot/public/departments",
+                "queried_endpoint": "/chatbot/inquiry/department",
                 "error": f"spring_api_json_error: {str(e)}",
             }
             
@@ -210,3 +210,20 @@ class SpringApiService:
         
         if department and isinstance(doctors, list):
             return f"{department}의 공개 가능한 의사 정보 {len(doctors)}건을 조회했습니다."
+        
+        return None
+    
+    def _build_department_summary(self, payload: Dict[str, Any]) -> Optional[str]:
+        if not payload:
+            return None
+        
+        department=payload.get("department")
+        description=payload.get("description")
+        
+        if department and description:
+            return f"{department} 정보가 조회되었습니다."
+        
+        if department:
+            return f"{department} 정보가 조회되었습니다."
+        
+        return None
