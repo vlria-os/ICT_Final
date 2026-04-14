@@ -15,7 +15,9 @@ QueryType=Literal[
     "USAGE_GUIDE",
     "RESERVATION_STATUS",
     "DOCTOR_INFO",
+    "DOCTOR_SCHEDULE",
     "DEPARTMENT_INFO",
+    "DEPARTMENT_LIST",
     "MIXED",
     "UNKNOWN",
 ]

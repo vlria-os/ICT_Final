@@ -16,7 +16,9 @@ class RoutingDecision(BaseModel):
         "USAGE_GUIDE",
         "RESERVATION_STATUS",
         "DOCTOR_INFO",
+        "DOCTOR_SCHEDULE",
         "DEPARTMENT_INFO",
+        "DEPARTMENT_LIST",
         "MIXED",
         "UNKNOWN",
     ] = Field(
@@ -48,8 +50,13 @@ ROUTING_SYSTEM_PROMPT="""
 - 문서형 운영 기준
 
 2. DB
+- 공개 가능한 진료과 목록
+- 공개 가능한 진료과 정보
 - 공개 가능한 진료과 예약 현황
 - 공개 가능한 의사 정보
+- 공개 가능한 특정 의사의 진료 일정
+- 공개 가능한 특정 의사의 날짜별/기간별 진료 가능 여부
+- 공개 가능한 특정 의사의 날짜별/기간별 예약 가능 여부
 - 공개 가능한 부서 운영 정보
 - 날짜별/과별 구조화된 운영 데이터
 
@@ -63,7 +70,8 @@ ROUTING_SYSTEM_PROMPT="""
 
 [판단 기준]
 - 병원 규정, 이용 수칙, 절차, 안내문 중심 질문이면 PDF
-- 예약 현황, 의사 목록, 날짜별 운영 상태 같은 구조화 정보면 DB
+- 예약 현황, 진료과 목록, 의사 목록, 날짜별 운영 상태 같은 구조화 정보면 DB
+- 특정 의사의 날짜별 진료 가능 여부, 특정 기간 공개 진료 일정은 DB
 - 규정 설명과 운영 데이터가 동시에 필요하면 BOTH
 - 소스 판별이 어렵고 정보가 너무 부족하면 NONE
 
@@ -72,7 +80,9 @@ ROUTING_SYSTEM_PROMPT="""
 - USAGE_GUIDE: 이용 방법, 절차, 안내, 운영 시간
 - RESERVATION_STATUS: 예약 현황, 예약 가능 여부, 날짜별 예약 상태
 - DOCTOR_INFO: 의사 정보, 의사 목록, 의사 근무 정보
+- DOCTOR_SCHEDULE: 특정 의사의 날짜별 진료/예약 가능 여부, 특정 기간 공개 진료 일정
 - DEPARTMENT_INFO: 진료과 정보, 부서 정보, 과 운영 정보
+- DEPARTMENT_LIST: 병원 전체 진료과 목록, 어떤 진료과가 있는지
 - MIXED: 두 가지 이상이 섞인 질문
 - UNKNOWN: 분류 어려움
 
