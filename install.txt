@@ -10,3 +10,5 @@ pip install python-dotenv
 pip install python-dateutil
 pip install langchain-chroma
 pip install langchain-text-splitters
+pip install python-multipart
+pip install tzdata

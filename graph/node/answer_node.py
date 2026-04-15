@@ -61,7 +61,7 @@ def answer_node(state: ChatbotState) -> ChatbotState:
         
     schedule_notice=None
     
-    if query_type == ["DOCTOR_SCHEDULE", "RESERVATION_STATUS"] and db_data:
+    if query_type in ["DOCTOR_SCHEDULE", "RESERVATION_STATUS"] and db_data:
         schedule_published=db_data.get("schedulePublished")
         if schedule_published is False:
             schedule_notice="다만 해당 날짜의 의료진 스케쥴이 아직 등록되지 않아 예상 기준으로 안내된 내용일 수 있습니다. 정확한 일정 및 예약 가능 여부는 병원에 직접 문의해 주세요."

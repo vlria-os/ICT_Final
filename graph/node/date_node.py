@@ -63,11 +63,21 @@ DATE_SYSTEM_PROMPT="""
 7. 대화 문맥은 저장되지 않는다. 반드시 현재 질문 한 개만 기준으로 해석한다.
 8. 출력은 반드시 구조화된 값만 반환한다.
 
+[중요 규칙]
+- "이번 주", "다음 주", "이번 달", "다음 달", "이번달", "다음달", "이번 달 말까지", "다음 달 전체", "5월", "2026년 5월" 같은 표현은 모두 기간 표현이므로 DATE_RANGE로 반환한다.
+- "다음달"은 다음 달의 1일부터 마지막 날까지의 기간으로 해석한다.
+- "이번달"은 이번 달의 1일부터 마지막 날까지의 기간으로 해석한다.
+- "5월"처럼 월만 언급된 경우도 해당 월 전체 기간으로 해석한다.
+- "오늘", "내일", "모레", "다음 주 금요일", "4월 20일"처럼 하루가 특정되는 경우만 EXACT_DATE로 반환한다.
+
 [예시]
 - "오늘 정형외과 예약 현황 알려줘" -> EXACT_DATE
 - "내일 소아과 가능한가?" -> EXACT_DATE
 - "이번 주 내과 예약 현황 알려줘" -> DATE_RANGE
 - "다음 주 금요일 외과 예약 상황" -> EXACT_DATE
+- "다음달에 산부인과 진료 예약할 수 있어?" -> DATE_RANGE
+- "이번달 내과 예약 현황 알려줘" -> DATE_RANGE
+- "5월 정형외과 예약 가능해?" -> DATE_RANGE
 - "예약 현황 알려줘" -> NONE
 - "그날 예약 현황 알려줘" -> AMBIGUOUS
 """.strip()
@@ -106,31 +116,36 @@ def date_node(state: ChatbotState) -> ChatbotState:
             ]
         )
         
-        query_type=state.get("query_type")
-        
-        if query_type in ["RESERVATION_STATUS", "DOCTOR_SCHEDULE"]:
-            if decision.resolution_type == "EXACT_DATE" and decision.resolved_date:
-                if _is_past_date(decision.resolved_date, current_datetime):
-                    return {
-                        "allowed_status": "BLOCKED",
-                        "block_type": "PAST_DATE",
-                        "block_reason": "과거 날짜에 대한 예약 및 진료 일정 정보는 제공하지 않습니다.",
-                        "has_date_expression": True,
-                        "resolved_date": None,
-                        "resolved_date_range": None
-                    }
-                    
-            if (decision.resolution_type == "DATE_RANGE" and decision.start_date
-                and decision.end_date):
-                if _is_past_date(decision.end_date, current_datetime):
-                    return {
-                        "allowed_status": "BLOCKED",
-                        "block_type": "PAST_DATE",
-                        "block_reason": "과거 기간에 대한 예약 및 진료 일정 정보는 제공하지 않습니다.",
-                        "has_date_expression": True,
-                        "resolved_date": None,
-                        "resolved_date_range": None
-                    }
+        if decision.resolution_type == "EXACT_DATE" and decision.resolved_date:
+            if _is_past_date(decision.resolved_date, current_datetime):
+                return {
+                    "allowed_status": "BLOCKED",
+                    "block_type": "PAST_DATE",
+                    "block_reason": "과거 날짜에 대한 예약 및 진료 일정 정보는 제공하지 않습니다.",
+                    "has_date_expression": True,
+                    "resolved_date": None,
+                    "resolved_date_range": None
+                }
+
+        if decision.resolution_type == "DATE_RANGE":
+            if not decision.start_date or not decision.end_date:
+                return {
+                    "allowed_status": "NEEDS_CLARIFICATION",
+                    "block_type": "INSUFFICIENT_INFO",
+                    "block_reason": "질문의 날짜 범위를 정확히 해석할 수 없어 답변할 수 없습니다. 날짜를 다시 구체적으로 질문해 주세요.",
+                    "has_date_expression": True,
+                    "resolved_date": None,
+                    "resolved_date_range": None,
+                }
+
+            return {
+                "has_date_expression": True,
+                "resolved_date": None,
+                "resolved_date_range": {
+                    "start_date": decision.start_date,
+                    "end_date": decision.end_date,
+                },
+            }
         
         if decision.resolution_type=="NONE":
             return {

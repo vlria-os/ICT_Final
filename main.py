@@ -2,6 +2,9 @@ import os
 import asyncio
 import uuid
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from datetime import datetime
 from zoneinfo import ZoneInfo
 

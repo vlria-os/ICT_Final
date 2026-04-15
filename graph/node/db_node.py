@@ -101,8 +101,7 @@ def db_node(state: ChatbotState) -> ChatbotState:
         
     if query_type == "DOCTOR_INFO":
         result = spring_api_service.get_public_doctor_info(
-            department=department,
-            exact_date=resolved_date
+            department=department
         )
         
         return {

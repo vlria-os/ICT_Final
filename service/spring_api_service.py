@@ -82,17 +82,13 @@ class SpringApiService:
             
     def get_public_doctor_info(
         self,
-        department: str,
-        exact_date: Optional[str] = None
+        department: str
     ) -> Dict[str, Any]:
         endpoint=f"{self.base_url}/chatbot/inquiry/doctor"
         
         params: Dict[str, Any] = {
             "department": department
         }
-        
-        if exact_date:
-            params["date"]=exact_date
             
         try:
             response=self.session.get(
@@ -276,6 +272,8 @@ class SpringApiService:
         
         department=payload.get("department")
         date=payload.get("date")
+        start_date=payload.get("startDate")
+        end_date=payload.get("endDate")
         total_count=payload.get("totalCount")
         available_count=payload.get("availableCount")
         
@@ -286,6 +284,9 @@ class SpringApiService:
             
         if date:
             parts.append(f"기준 날짜: {date}")
+            
+        if start_date and end_date:
+            parts.append(f"조회 기간: {start_date}~{end_date}")
             
         if total_count is not None:
             parts.append(f"전체 예약 수: {total_count}")
@@ -346,9 +347,9 @@ class SpringApiService:
             return None
         
         department=payload.get("department")
-        description=payload.get("description")
+        location=payload.get("location")
         
-        if department and description:
+        if department and location:
             return f"{department} 정보가 조회되었습니다."
         
         if department:
