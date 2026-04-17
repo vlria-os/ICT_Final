@@ -1,0 +1,14 @@
+langgraph
+langchain
+langchain-openai
+fastapi
+uvicorn
+requests
+chromadb
+pypdf
+python-dotenv
+python-dateutil
+langchain-chroma
+langchain-text-splitters
+python-multipart
+tzdata
