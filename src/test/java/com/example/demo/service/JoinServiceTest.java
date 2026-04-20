@@ -26,16 +26,14 @@ public class JoinServiceTest {
     @Test
     public void join(){
         List<Integer> roles=new ArrayList<>();
-        roles.add(1);
 
         StaffUserResponse response=StaffUserResponse.builder()
-                .email("song@gmail.com")
+                .email("Hong@gmail.com")
                 .password(passwordEncoder.encode("1234"))
                 .status("Y")
                 .roles(roles)
-                .departmentId(16)
-                .name("song")
-                .phone("010-5501-1234")
+                .name("Hong")
+                .phone("010-5555-1234")
                 .address("서울특별시 서초구 서초동")
                 .build();
 

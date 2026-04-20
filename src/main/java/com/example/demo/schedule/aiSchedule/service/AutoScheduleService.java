@@ -5,6 +5,7 @@ import com.example.demo.schedule.staff.entity.StaffSchedule;
 import com.example.demo.schedule.staff.entity.StaffScheduleType;
 import com.example.demo.schedule.staff.repository.StaffScheduleRepository;
 import com.example.demo.schedule.staff.repository.StaffScheduleTypeRepository;
+import com.example.demo.sse.SseService;
 import com.example.demo.staff.Staff;
 import com.example.demo.staff.StaffRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class AutoScheduleService {
 
     private final SchedulePolicyService schedulePolicyService;
     private final ConditionParseService conditionParseService;
+    private final SseService sseService;
     private final StaffRepository staffRepository;
     private final StaffScheduleRepository staffScheduleRepository;
     private final StaffScheduleTypeRepository staffScheduleTypeRepository;
@@ -68,6 +70,25 @@ public class AutoScheduleService {
     public AiScheduleResultDto confirmSchedule(ConfirmScheduleRequestDto request) {
         List<String> validationErrors = saveSchedules(request.getAssignments());
 
+        List<Integer> userIds = staffRepository.findByDepartmentDepartmentId(request.getDepartmentId())
+                .stream()
+                .filter(s -> s.getUser() != null)
+                .map(s -> s.getUser().getUserId())
+                .toList();
+
+        List<LocalDate> dates = request.getAssignments().stream()
+                .map(a -> LocalDate.parse((String) a.get("workDate")))
+                .sorted()
+                .toList();
+
+        String startDate = dates.isEmpty() ? "": dates.get(0).toString();
+        String endDate = dates.isEmpty() ? "" : dates.get(dates.size()-1).toString();
+
+        sseService.broadcastToDepartment(userIds, Map.of(
+                "message","스케줄이 확정되었습니다",
+                "startDate", startDate,
+                "endDate", endDate
+        ));
         return AiScheduleResultDto.builder()
                 .assignments(request.getAssignments())
                 .unassigned(new ArrayList<>())

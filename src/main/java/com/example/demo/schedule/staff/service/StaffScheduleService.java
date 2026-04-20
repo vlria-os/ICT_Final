@@ -8,6 +8,7 @@ import com.example.demo.schedule.staff.entity.StaffSchedule;
 import com.example.demo.schedule.staff.entity.StaffScheduleType;
 import com.example.demo.schedule.staff.repository.StaffScheduleRepository;
 import com.example.demo.schedule.staff.repository.StaffScheduleTypeRepository;
+import com.example.demo.sse.SseService;
 import com.example.demo.staff.Staff;
 import com.example.demo.staff.StaffRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class StaffScheduleService {
     private final StaffScheduleRepository staffScheduleRepository;
     private final StaffScheduleTypeRepository staffScheduleTypeRepository;
     private final StaffRepository staffRepository;
+    private final SseService sseService;
 
     // 내 스케줄 조회 (JWT userId 기반)
     public Page<StaffScheduleDto> getMySchedule(Integer userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
@@ -159,12 +162,37 @@ public class StaffScheduleService {
         StaffSchedule staffSchedule = staffScheduleRepository.findById(scheduleId)
                 .orElseThrow(()->new EntityNotFoundException("해당 스케줄이 존재하지 않습니다"));
         staffSchedule.setStatus("CONFIRMED");
+
+        if(staffSchedule.getStaff().getUser() != null){
+            Integer userId = staffSchedule.getStaff().getUser().getUserId();
+            sseService.sendToUser(userId, Map.of(
+                    "message", "스케줄이 확정되었습니다",
+                    "data", staffSchedule.getWorkDate().toString()
+            ));
+        }
     }
     public void bulkConfirm(List<Integer> scheduleIds){
         List<StaffSchedule> schedules= staffScheduleRepository.findAllById(scheduleIds);
         for (StaffSchedule schedule: schedules){
             schedule.setStatus("CONFIRMED");
         }
+        List<Integer> userIds = schedules.stream()
+                .map(s -> s.getStaff().getDepartment().getDepartmentId())
+                .distinct()
+                .flatMap(deptId-> staffRepository.findByDepartmentDepartmentId(deptId).stream())
+                .filter(s -> s.getUser() != null)
+                .map(s -> s.getUser().getUserId())
+                .distinct()
+                .toList();
+
+                LocalDate startDate= schedules.stream().map(StaffSchedule::getWorkDate).min(LocalDate::compareTo).orElse(null);
+                LocalDate endDate = schedules.stream().map(StaffSchedule::getWorkDate).max(LocalDate::compareTo).orElse(null);
+
+                sseService.broadcastToDepartment(userIds, Map.of(
+                        "message","스케줄이 확정되었습니다",
+                        "startDate", startDate.toString(),
+                        "endDate",endDate.toString()
+                ));
     }
 
     //스케줄 일괄등록: 다른직원 같은스케줄 한번에

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,10 +63,42 @@ public class SseService {
                 System.out.println("❌ 전송 실패");
                 emitters.remove(doctorId);
             }
-        }else {
+        } else {
             System.out.println("❌ emitter 없음");
         }
     }
+
+    //스케줄 확정시 해당 직원에게 알림
+    public void broadcastToDepartment(List<Integer> userIds, Object data) {
+        userIds.forEach(userId -> {
+            SseEmitter emitter = emitters.get(userId);
+            if (emitter != null) {
+                try {
+                    emitter.send(SseEmitter.event()
+                            .name("scheduleConfirmed")
+                            .data(data));
+                } catch (Exception e) {
+                    System.out.println("❌ 전송 실패 userId = " + userId);
+                    emitters.remove(userId);
+                }
+            }
+        });
+    }
+
+    public void sendToUser(Integer userId, Object data) {
+        SseEmitter emitter = emitters.get(userId);
+        if (emitter != null) {
+            try {
+                emitter.send(SseEmitter.event()
+                        .name("scheduleConfirmed")
+                        .data(data));
+            } catch (Exception e) {
+                System.out.println("❌ 전송 실패 userId = " + userId);
+                emitters.remove(userId);
+            }
+        }
+    }
+
 
 //    public Map<String, Object> getToken(String accessToken,
 //                                             String refreshToken){
@@ -73,9 +106,10 @@ public class SseService {
 //            throw new CustomJWTException("NULL_REFRESH");
 //        }
 //
-////        if (accessToken == null){
-////            throw new CustomJWTException("INVALID_REFRESH");
-////        }
+
+    /// /        if (accessToken == null){
+    /// /            throw new CustomJWTException("INVALID_REFRESH");
+    /// /        }
 //
 //        Map<String, Object> claims = jWTUtil.validateToken(refreshToken);
 //
@@ -100,24 +134,24 @@ public class SseService {
 //    }
 
     //리프레쉬 토큰 유효기간이 1시간 미만으로 남았는지 검사
-    private boolean checkTime(Long exp){
+    private boolean checkTime(Long exp) {
         //JWT exp를 날짜로 변환
-        Date expDate=new Date((long) exp * (1000));
+        Date expDate = new Date((long) exp * (1000));
         //현재 시간과의 차이 계산 - 밀리세컨즈
-        long gap=expDate.getTime() - System.currentTimeMillis();
+        long gap = expDate.getTime() - System.currentTimeMillis();
         //분 단위 계산
-        long leftMin=gap/(1000*60);
+        long leftMin = gap / (1000 * 60);
         //1시간 남았는지
         return leftMin < 20;
     }
 
     //어세스 토큰 유효기간이 남았는지 검사(안 남았으면 true, 남았으면 false)
-    private boolean checkExpiredToken(String token){
-        try{
+    private boolean checkExpiredToken(String token) {
+        try {
             jWTUtil.validateToken(token);
-        }catch (CustomJWTException ex){
+        } catch (CustomJWTException ex) {
             System.out.println("checkExpiredToken ==> " + ex.getMessage());
-            if (ex.getMessage().equals("Expired")){
+            if (ex.getMessage().equals("Expired")) {
                 return true;
             }
         }

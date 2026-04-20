@@ -12,4 +12,5 @@ import java.util.Map;
 // 프론트가 미리보기 확인 후 저장 요청할 때 사용
 public class ConfirmScheduleRequestDto {
     private List<Map<String, Object>> assignments;
+    private Integer departmentId;
 }
