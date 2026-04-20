@@ -32,7 +32,7 @@ public class SseController {
     public SseEmitter subscribe(@PathVariable Integer userId,
                                 @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
-        SseEmitter emitter = new SseEmitter(60 * 1000L);
+//        SseEmitter emitter = new SseEmitter(60 * 1000L);
 
         String accessToken = null;
 
@@ -44,9 +44,10 @@ public class SseController {
 
         try {
             if (accessToken == null || accessToken.isBlank()) {
-                emitter.send(SseEmitter.event().name("error").data("NO_TOKEN"));
-                emitter.complete();
-                return emitter;
+                SseEmitter err = new SseEmitter();
+                try { err.send(SseEmitter.event().name("error").data("NO_TOKEN")); } catch (Exception ignored) {}
+                err.complete();
+                return err;
             }
 
             Claims claims=null;
@@ -59,9 +60,10 @@ public class SseController {
 //                    emitter.send(SseEmitter.event()
 //                            .name("TOKEN_REFRESH")
 //                            .data(response));
-                    emitter.send(SseEmitter.event().name("error").data("TOKEN_REFRESH"));
-                    emitter.complete();
-                    return emitter;
+                    SseEmitter err = new SseEmitter();
+                    try { err.send(SseEmitter.event().name("error").data("TOKEN_REFRESH")); } catch (Exception ignored) {}
+                    err.complete();
+                    return err;
                 } else {
                     throw e;
                 }
@@ -77,23 +79,28 @@ public class SseController {
 
 
             if (!staff.getUser().getUserId().equals(claimUserId)) {
-                emitter.send(SseEmitter.event().name("error").data("FORBIDDEN"));
-                emitter.complete();
-                return emitter;
+                SseEmitter err = new SseEmitter();
+                try { err.send(SseEmitter.event().name("error").data("FORBIDDEN")); } catch (Exception ignored) {}
+                err.complete();
+                return err;
             }
             System.out.println("SSE 구독 요청 userId = " + userId);
 
             return sseService.subscribe(userId);
 
-        } catch (Exception e) {
+        } catch (CustomJWTException e) {
+            SseEmitter err = new SseEmitter();
             try {
-                e.printStackTrace();
-                emitter.send(SseEmitter.event().name("error").data("AUTH_ERROR"));
-            } catch (Exception ignored) {
-                System.out.println(ignored.getMessage());
-            }
-            emitter.complete();
-            return emitter;
+                String msg = "Expired".equals(e.getMessage()) ? "TOKEN_REFRESH" : "AUTH_ERROR";
+                err.send(SseEmitter.event().name("error").data(msg));
+            } catch (Exception ignored) {}
+            err.complete();
+            return err;
+        } catch (Exception e) {
+            SseEmitter err = new SseEmitter();
+            try { err.send(SseEmitter.event().name("error").data("AUTH_ERROR")); } catch (Exception ignored) {}
+            err.complete();
+            return err;
         }
 
     }
