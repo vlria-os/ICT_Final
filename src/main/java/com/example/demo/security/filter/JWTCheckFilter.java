@@ -27,7 +27,7 @@ import java.util.Map;
 public class JWTCheckFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
-    public JWTCheckFilter(JWTUtil jwtUtil, CustomUserDetailsService customUserDetailsService){
+    public JWTCheckFilter(JWTUtil jwtUtil){
         this.jwtUtil=jwtUtil;
     }
 
@@ -37,11 +37,9 @@ public class JWTCheckFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path=request.getRequestURI();
-        System.out.println("JWT shouldNotFilter path = " + path);
-
-        if (path.startsWith("/none") || path.startsWith("/login") || path.startsWith("/ws") ||
-                path.startsWith("/join") || path.startsWith("/jwt/token/refresh")
-            || path.startsWith("/upload") || path.startsWith("/social") || path.startsWith("/test/upload") || path.startsWith("/logout")
+        if (path.startsWith("/none") || path.startsWith("/login") || path.startsWith("/logout") ||
+                path.startsWith("/join") || path.startsWith("/jwt/token/refresh") || path.startsWith("/ws")
+            || path.startsWith("/upload") || path.startsWith("/social") || path.startsWith("/test/upload")
                 || path.startsWith("/chatbot/inquiry")){
             return true;
         }
@@ -76,9 +74,10 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             }
 
             Integer departmentId=claims.get("departmentId", Integer.class);
+            String name=claims.get("name", String.class);
 
             CustomUserDetails details=
-                    new CustomUserDetails(email, userId, status, authorities, departmentId);
+                    new CustomUserDetails(email, userId, status, authorities, departmentId, name);
 
             //인증된 사용자 정보를 스프링 시큐리티 컨텍스트에 등록
             UsernamePasswordAuthenticationToken authenticationToken=

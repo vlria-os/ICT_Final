@@ -8,11 +8,9 @@ import com.example.demo.security.jwtutil.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +28,6 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JWTUtil jwtUtil;
-    private final CustomUserDetailsService customUserDetailsService;
     private final ApiLoginSuccessHandler apiLoginSuccessHandler;
     private final ApiLoginFailureHandler apiLoginFailureHandler;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -46,6 +43,7 @@ public class SecurityConfig {
             sessionConfig.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
         });
 
+        //csrf 토큰 사용하지 않기
         httpSecurity.csrf(csrf -> csrf.disable());
 
         httpSecurity.formLogin(form -> form
@@ -60,7 +58,7 @@ public class SecurityConfig {
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         httpSecurity.addFilterBefore(
-                new JWTCheckFilter(jwtUtil,customUserDetailsService),
+                new JWTCheckFilter(jwtUtil),
                 UsernamePasswordAuthenticationFilter.class
         );
 
@@ -68,9 +66,8 @@ public class SecurityConfig {
                 ex.accessDeniedHandler(customAccessDeniedHandler));
 
         httpSecurity.authorizeHttpRequests(auth ->
-                auth.requestMatchers("/login","/join","/upload/**", "/jwt/token/refresh",
-                                "/join/**", "/social/**", "/test/upload", "/chatbot/inquiry/**",
-                                "/ws", "/ws/**").permitAll()
+                auth.requestMatchers("/login","/join", "/ws", "/ws/**", "/upload/**", "/jwt/token/refresh",
+                                "/join/**", "/social/**", "/chatbot/inquiry/**").permitAll()
                         .anyRequest().authenticated()
         );
 

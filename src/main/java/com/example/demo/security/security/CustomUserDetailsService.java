@@ -1,5 +1,7 @@
 package com.example.demo.security.security;
 
+import com.example.demo.patient.Patient;
+import com.example.demo.patient.PatientRepository;
 import com.example.demo.socialAccount.SocialAccount;
 import com.example.demo.socialAccount.SocialAccountException;
 import com.example.demo.socialAccount.SocialAccountRepository;
@@ -21,6 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
     private final StaffRepository staffRepository;
     private final SocialAccountRepository socialAccountRepository;
+    private final PatientRepository patientRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -29,8 +32,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         Staff staff=staffRepository.findByUser(user).orElse(null);
 
         Integer departmentId=null;
+        String name=null;
         if (staff != null && staff.getDepartment() != null){
             departmentId=staff.getDepartment().getDepartmentId();
+            name=staff.getName();
+        } else {
+            Patient patient=patientRepository.findByUser(user);
+            name=patient.getName();
         }
 
         List<SocialAccount> accounts=socialAccountRepository.findByUser(user);
@@ -39,6 +47,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new SocialAccountException(providers);
         }
 
-        return new CustomUserDetails(user, departmentId);
+        return new CustomUserDetails(user, departmentId, name);
     }
 }

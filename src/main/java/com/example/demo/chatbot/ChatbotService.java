@@ -51,8 +51,7 @@ public class ChatbotService {
         Department department=departmentRepository.findByDepartmentName(departmentName)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 진료과명입니다."));
 
-        List<Staff> staffList=staffRepository.findDoctorsByDepartment(department)
-                .orElseThrow(() -> new RuntimeException("해당 진료과에 의사가 존재하지 않습니다."));
+        List<Staff> staffList=staffRepository.findDoctorByDepartment(department);
 
         List<ChatbotDoctorDto> doctors=staffList.stream().map(s -> ChatbotDoctorDto.builder()
                 .name(s.getName()).build()).toList();
@@ -90,8 +89,7 @@ public class ChatbotService {
         Department department = departmentRepository.findByDepartmentName(departmentName)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 진료과명입니다."));
 
-        List<Staff> doctors = staffRepository.findDoctorsByDepartment(department)
-                .orElseThrow(() -> new RuntimeException("해당 진료과에 의사가 존재하지 않습니다."));
+        List<Staff> doctors = staffRepository.findDoctorByDepartment(department);
 
         if (hasDate){
             LocalDate date=LocalDate.parse(request.getDate());

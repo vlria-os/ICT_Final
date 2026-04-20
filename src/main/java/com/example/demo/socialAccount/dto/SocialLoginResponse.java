@@ -14,6 +14,7 @@ import java.util.List;
 public class SocialLoginResponse {
     private Integer userId;
     private String email;
+    private String name;
     private String accessToken;
     private String refreshToken;
     private List<String> roles;

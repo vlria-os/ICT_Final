@@ -1,8 +1,6 @@
 package com.example.demo.security.security;
 
-import com.example.demo.staff.Staff;
 import com.example.demo.user.User;
-import com.example.demo.userRole.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,17 +8,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.*;
 
 public class CustomUserDetails implements UserDetails {
-    private User user;
     private Integer departmentId;
     private Integer userId;
     private String password;
     private String email;
     private String status;
     private Collection<? extends GrantedAuthority> authorities;
+    private String name;
 
 
-    public CustomUserDetails(User user, Integer departmentId){
-        this.user=user;
+    public CustomUserDetails(User user, Integer departmentId, String name){
         this.departmentId=departmentId;
         this.userId=user.getUserId();
         this.password=user.getPassword();
@@ -29,17 +26,18 @@ public class CustomUserDetails implements UserDetails {
         this.authorities=user.getUserRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().getRoleName()))
                 .toList();
+        this.name=name;
     }
 
     public CustomUserDetails(String email, Integer userId, String status,
-                                Collection<? extends GrantedAuthority> authorities, Integer departmentId){
-        this.user=null;
+                                Collection<? extends GrantedAuthority> authorities, Integer departmentId, String name){
         this.userId=userId;
         this.password=null;
         this.email=email;
         this.status=status;
         this.authorities=authorities;
         this.departmentId=departmentId;
+        this.name=name;
     }
 
     public Integer getDepartmentId(){
@@ -52,6 +50,10 @@ public class CustomUserDetails implements UserDetails {
 
     public String getStatus(){
         return status;
+    }
+
+    public String getName() {
+        return name;
     }
 
     //사용자 권한을 Collection으로 반환

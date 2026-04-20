@@ -13,13 +13,13 @@ import java.util.Optional;
 public interface SlotRepository extends JpaRepository<Slot,Integer> {
     Optional<Slot> findByStartTime(LocalDateTime startTime);
 
-    Optional<Slot> findByStartTimeAndStaff(LocalDateTime startTime, Staff staff);
-
     List<Slot> findAllByStartTimeBetweenAndStaff(LocalDateTime start,
                                           LocalDateTime end,
                                           Staff staff);
 
     List<Slot> findAllByStartTimeBetweenAndDepartment(LocalDateTime startTimeAfter, LocalDateTime startTimeBefore, Department department);
+
+    Optional<Slot> findByStartTimeAndStaff(LocalDateTime startTime, Staff staff);
 
     List<Slot> findByDepartmentAndStartTimeGreaterThanEqualAndStartTimeLessThan(Department department,
                                                                                 LocalDateTime start,
