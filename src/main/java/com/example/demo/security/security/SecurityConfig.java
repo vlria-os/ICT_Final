@@ -46,7 +46,6 @@ public class SecurityConfig {
             sessionConfig.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
         });
 
-        //csrf 토큰 사용하지 않기
         httpSecurity.csrf(csrf -> csrf.disable());
 
         httpSecurity.formLogin(form -> form
