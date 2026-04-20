@@ -270,10 +270,17 @@ public class SlotService {
         List<SlotResponse> result = new ArrayList<>();
         LocalDate date = daily.toLocalDate();
 
-        LocalDateTime start = date.atTime(9, 0);  // 2026-04-02T09:00:00
-        LocalDateTime end = date.atTime(17, 0);   // 2026-04-02T18:00:00
+        Staff doctor = staffRepository.findByStaffId(doctorId);
 
-        Staff doctor=staffRepository.findByStaffId(doctorId);
+        StaffSchedule schedule = scheduleRepository.findByStaffAndWorkDate(doctor, date);
+        if (schedule != null
+                && schedule.getStaffScheduleType() != null
+                && schedule.getStaffScheduleType().getScheduleTypeId() == 3) {
+            return result; // OFF면 빈 배열 반환
+        }
+
+        LocalDateTime start = date.atTime(9, 0);
+        LocalDateTime end = date.atTime(17, 0);
 
         List<Slot> slots = slotRepository.findAllByStartTimeBetweenAndStaff(start, end, doctor);
 

@@ -5,6 +5,7 @@ import com.example.demo.security.jwtutil.JWTUtil;
 import com.example.demo.security.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -121,5 +122,18 @@ public class SseService {
             }
         }
         return false;
+    }
+
+    @Scheduled(fixedRate = 25000) // 25초마다
+    public void heartbeat() {
+        emitters.forEach((userId, emitter) -> {
+            try {
+                emitter.send(SseEmitter.event()
+                        .name("ping")
+                        .data("keep-alive"));
+            } catch (Exception e) {
+                emitters.remove(userId);
+            }
+        });
     }
 }

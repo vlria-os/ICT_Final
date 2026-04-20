@@ -31,8 +31,8 @@ public class SseController {
     @GetMapping(value = "/api/sse/subscribe/{userId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@PathVariable Integer userId,
                                 @RequestHeader(value = "Authorization", required = false) String authHeader) {
-
-//        SseEmitter emitter = new SseEmitter(60 * 1000L);
+        System.out.println("SSE 구독 진입");
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
         String accessToken = null;
 
@@ -44,10 +44,9 @@ public class SseController {
 
         try {
             if (accessToken == null || accessToken.isBlank()) {
-                SseEmitter err = new SseEmitter();
-                try { err.send(SseEmitter.event().name("error").data("NO_TOKEN")); } catch (Exception ignored) {}
-                err.complete();
-                return err;
+                emitter.send(SseEmitter.event().name("error").data("NO_TOKEN"));
+                emitter.complete();
+                return emitter;
             }
 
             Claims claims=null;
@@ -56,51 +55,36 @@ public class SseController {
                 System.out.println("==========>"+claims);
             } catch (CustomJWTException e) {
                 if ("Expired".equals(e.getMessage())) {
-//                    Map<String, Object> response = sseService.getToken(accessToken, refreshToken);
-//                    emitter.send(SseEmitter.event()
-//                            .name("TOKEN_REFRESH")
-//                            .data(response));
-                    SseEmitter err = new SseEmitter();
-                    try { err.send(SseEmitter.event().name("error").data("TOKEN_REFRESH")); } catch (Exception ignored) {}
-                    err.complete();
-                    return err;
+                    emitter.send(SseEmitter.event().name("error").data("TOKEN_REFRESH"));
+                    emitter.complete();
+                    return emitter;
                 } else {
                     throw e;
                 }
             }
 
             Integer claimUserId = Integer.valueOf(claims.get("userId").toString());
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("user Not exist"));
-            Staff staff = staffRepository.findByUser(user)
-                    .orElseThrow(() -> new RuntimeException("staff Not exist"));
 
             System.out.println("로그인한 의사===========>"+userId);
 
-
-            if (!staff.getUser().getUserId().equals(claimUserId)) {
-                SseEmitter err = new SseEmitter();
-                try { err.send(SseEmitter.event().name("error").data("FORBIDDEN")); } catch (Exception ignored) {}
-                err.complete();
-                return err;
+            if (!userId.equals(claimUserId)) {
+                emitter.send(SseEmitter.event().name("error").data("FORBIDDEN"));
+                emitter.complete();
+                return emitter;
             }
             System.out.println("SSE 구독 요청 userId = " + userId);
 
             return sseService.subscribe(userId);
 
-        } catch (CustomJWTException e) {
-            SseEmitter err = new SseEmitter();
-            try {
-                String msg = "Expired".equals(e.getMessage()) ? "TOKEN_REFRESH" : "AUTH_ERROR";
-                err.send(SseEmitter.event().name("error").data(msg));
-            } catch (Exception ignored) {}
-            err.complete();
-            return err;
         } catch (Exception e) {
-            SseEmitter err = new SseEmitter();
-            try { err.send(SseEmitter.event().name("error").data("AUTH_ERROR")); } catch (Exception ignored) {}
-            err.complete();
-            return err;
+            try {
+                e.printStackTrace();
+                emitter.send(SseEmitter.event().name("error").data("AUTH_ERROR"));
+            } catch (Exception ignored) {
+                System.out.println(ignored.getMessage());
+            }
+            emitter.complete();
+            return emitter;
         }
 
     }

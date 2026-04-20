@@ -24,10 +24,16 @@ public class DepartmentService {
                         .departmentId(dept.getDepartmentId())
                         .departmentName(dept.getDepartmentName())
                         .build())
-
                 .toList();
 
         return Map.of("content", list);
+    }
+
+    public List<DepartmentDto> getByCategory(String category) {
+        return departmentRepository.findByDepartmentCategoryAndStatus(category, "Y")
+                .stream()
+                .map(this::entityToDto)
+                .toList();
     }
     //등록
     public Integer register(DepartmentDto dto){

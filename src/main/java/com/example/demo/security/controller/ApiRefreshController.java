@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.util.Date;
@@ -29,6 +26,8 @@ public class ApiRefreshController {
             @CookieValue(value = "refreshToken", required = false) String refreshToken,
             HttpServletResponse response
     ) {
+        System.out.println("==========>리프레시 재발급 시작");
+
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new CustomJWTException("NULL_REFRESH");
         }
@@ -58,30 +57,26 @@ public class ApiRefreshController {
         }
 
         String newAccessToken=jwtUtil.generateToken(claims, 1);
-        String newRefreshToken=refreshToken;
 
         if (checkTime((Long)claims.get("exp"))) {
-            newRefreshToken = jwtUtil.generateToken(claims, 2);
+            String newRefreshToken = jwtUtil.generateToken(claims, 2);
             System.out.println("redis=========>" + newRefreshToken);
             redisService.save(userId, newRefreshToken, 2);
         }
 
+        if (checkTime((Long) claims.get("exp"))) {
+            String newRefreshToken = jwtUtil.generateToken(claims, 2);
 
+            ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                    .httpOnly(true)
+                    .secure(false) // 운영 HTTPS면 true
+                    .path("/")
+                    .sameSite("Lax") // cross-origin 쿠키면 None 검토
+                    .maxAge(Duration.ofDays(14))
+                    .build();
 
-
-            if (checkTime((Long) claims.get("exp"))) {
-                newRefreshToken = jwtUtil.generateToken(claims, 2);
-
-                ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
-                        .httpOnly(true)
-                        .secure(false) // 운영 HTTPS면 true
-                        .path("/")
-                        .sameSite("Lax") // cross-origin 쿠키면 None 검토
-                        .maxAge(Duration.ofDays(14))
-                        .build();
-
-                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-            }
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        }
 
             return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
 

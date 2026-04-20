@@ -40,6 +40,11 @@ public class DepartmentController {
     public Map<String,Object> getDepartment(){
         return departmentService.getDepartment();
     }
+
+    @GetMapping("/by-category")
+    public List<DepartmentDto> getByCategory(@RequestParam String category){
+        return departmentService.getByCategory(category);
+    }
     //수정
     @PutMapping("/{departmentId}")
     public DepartmentDto update(@PathVariable Integer departmentId,

@@ -105,17 +105,17 @@ public class ReservationService {
         LocalTime requestStart = reservationDto.getReservationDate().toLocalTime();
         LocalTime requestEnd = requestStart.plusHours(1);
 
-        if(!availabilityService.isStaffAvailable(
-                staff.getStaffId(),
-                workDate,
-                requestStart,
-                requestEnd
-        )){
-            throw new IllegalStateException("해당 의사의 근무시간이 아닙니다");
-        }
-        if(slot.getCurrentPatient() >= slot.getMaxPatient()){
-            throw new IllegalStateException("해당 슬롯은 마감되었습니다");
-        }
+//        if(!availabilityService.isStaffAvailable(
+//                staff.getStaffId(),
+//                workDate,
+//                requestStart,
+//                requestEnd
+//        )){
+//            throw new IllegalStateException("해당 의사의 근무시간이 아닙니다");
+//        }
+//        if(slot.getCurrentPatient() >= slot.getMaxPatient()){
+//            throw new IllegalStateException("해당 슬롯은 마감되었습니다");
+//        }
 
         slot.setCurrentPatient(slot.getCurrentPatient()+1);
 
@@ -137,6 +137,8 @@ public class ReservationService {
                 .patientId(reservationDto.getPatientId())
                 .patientName("Peter")
                 .build();
+
+        System.out.println("이벤트 리스너 바로 직전");
         eventPublisher.publishEvent(
                 new ReservationConfirmedEvent(
                         userId,

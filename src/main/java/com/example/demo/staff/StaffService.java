@@ -3,9 +3,13 @@ package com.example.demo.staff;
 import com.example.demo.department.Department;
 import com.example.demo.department.DepartmentDto;
 import com.example.demo.department.DepartmentRepository;
+import com.example.demo.role.Role;
+import com.example.demo.role.RoleRepository;
 import com.example.demo.staff.dto.*;
 import com.example.demo.user.User;
 import com.example.demo.user.UserRepository;
+import com.example.demo.userRole.UserRole;
+import com.example.demo.userRole.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +27,36 @@ public class StaffService {
     private final StaffRepository staffRepository;
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
+
+    private static final Map<String, List<String>> POSITION_ROLE_MAP = Map.ofEntries(
+        Map.entry("INTERN",             List.of("DOCTOR")),
+        Map.entry("SPECIALIST",         List.of("DOCTOR")),
+        Map.entry("HEAD_DOCTOR",        List.of("DOCTOR")),
+        Map.entry("RESIDENT",           List.of("DOCTOR", "RESIDENT")),
+        Map.entry("FELLOW",             List.of("DOCTOR", "FELLOW")),
+        Map.entry("PROFESSOR",          List.of("DOCTOR", "PROFESSOR")),
+        Map.entry("NURSE",              List.of("NURSE")),
+        Map.entry("CHARGE_NURSE",       List.of("NURSE")),
+        Map.entry("DIRECTOR_NURSE",     List.of("NURSE")),
+        Map.entry("HEAD_NURSE",         List.of("NURSE", "HEAD_NURSE")),
+        Map.entry("STAFF",              List.of("STAFF")),
+        Map.entry("ASSISTANT_MANAGER",  List.of("STAFF")),
+        Map.entry("MANAGER",            List.of("STAFF", "MANAGER")),
+        Map.entry("ADMIN",              List.of("ADMIN"))
+    );
+
+    private void saveUserRoles(User user, String position) {
+        userRoleRepository.deleteByUser(user);
+        List<String> roleNames = POSITION_ROLE_MAP.getOrDefault(position, List.of());
+        for (String roleName : roleNames) {
+            Role role = roleRepository.findByRoleName(roleName);
+            if (role != null) {
+                userRoleRepository.save(UserRole.builder().user(user).role(role).build());
+            }
+        }
+    }
 
     //직원등록
     public Integer register(StaffRegisterDto dto){
@@ -56,6 +90,10 @@ public class StaffService {
                 .build();
 
         Staff savedStaff = staffRepository.save(staff);
+
+        if (user != null && dto.getPosition() != null) {
+            saveUserRoles(user, dto.getPosition());
+        }
 
         return savedStaff.getStaffId();
     }
@@ -95,6 +133,9 @@ public class StaffService {
                         .isActive(dto.getIsActive())
                         .build();
                 successList.add(staff);
+                if (dto.getPosition() != null) {
+                    saveUserRoles(user, dto.getPosition());
+                }
             }catch (Exception e){
                 failList.add(StaffBulkUploadResponseDto.FailDetail.builder()
                         .row(rowNum)
@@ -198,6 +239,10 @@ public class StaffService {
         staff.setPhone(dto.getPhone());
         staff.setAddress(dto.getAddress());
         staff.setIsActive(dto.getIsActive());
+
+        if (dto.getPosition() != null) {
+            saveUserRoles(user, dto.getPosition());
+        }
     }
 
     //soft delete

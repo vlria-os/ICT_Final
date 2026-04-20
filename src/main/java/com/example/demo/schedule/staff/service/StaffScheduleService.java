@@ -29,6 +29,14 @@ public class StaffScheduleService {
     private final StaffScheduleTypeRepository staffScheduleTypeRepository;
     private final StaffRepository staffRepository;
 
+    // 내 스케줄 조회 (JWT userId 기반)
+    public Page<StaffScheduleDto> getMySchedule(Integer userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Staff staff = staffRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 직원 정보가 없습니다."));
+        return staffScheduleRepository.findAllWithFilter(staff.getStaffId(), startDate, endDate, pageable)
+                .map(this::entityToDto);
+    }
+
     //스케줄 등록
     public Integer register(StaffScheduleDto dto){
         Staff staff=staffRepository.findById(dto.getStaffId())
