@@ -1,0 +1,613 @@
+.Billing-Layout {
+  width: 100%;
+  min-height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  background-color: #f4f7fb;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.Billing-Search-Area {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-form input {
+  flex: 1;
+  height: 44px;
+  border: 1px solid #cfd8e3;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: #1e293b;
+  background-color: #f8fafc;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.search-form input:focus {
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.search-form input::placeholder {
+  color: #94a3b8;
+}
+
+.search-form button {
+  min-width: 88px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 18px;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.search-form button:hover {
+  background: #1d4ed8;
+}
+
+.search-form button:active {
+  transform: translateY(1px);
+}
+
+.Billing-Component {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.billing-list,
+.payment-list {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  padding: 18px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  min-width: 0;
+}
+
+.billing-sort-area,
+.payment-sort-area {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.billing-sort-box,
+.payment-sort-box {
+  display: flex;
+  align-items: center;
+}
+
+.billing-sort-select,
+.payment-sort-select {
+  height: 38px;
+  min-width: 110px;
+  border: 1px solid #cfd8e3;
+  border-radius: 10px;
+  padding: 0 12px;
+  background-color: #f8fafc;
+  color: #334155;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.billing-sort-select:focus,
+.payment-sort-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.billing-table-area {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.billing-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.billing-table thead {
+  background: #eff6ff;
+}
+
+.billing-table thead tr th {
+  padding: 14px 12px;
+  border-bottom: 1px solid #dbe4f0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.billing-table tbody tr {
+  transition: background-color 0.18s ease;
+}
+
+.billing-table tbody tr:hover {
+  background-color: #f8fbff;
+}
+
+.billing-table tbody tr td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #edf2f7;
+  font-size: 13px;
+  color: #475569;
+  text-align: center;
+  vertical-align: middle;
+  word-break: keep-all;
+}
+
+.billing-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.billing-table button {
+  min-width: 72px;
+  height: 34px;
+  border: none;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 14px;
+  transition: background-color 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+.billing-table button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.billing-table button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.billing-table button:disabled {
+  background: #cbd5e1;
+  color: #f8fafc;
+  cursor: not-allowed;
+}
+
+/* 총 금액 셀 */
+.billing-table-total-amount-td {
+  min-width: 140px;
+}
+
+.total-amount-is-null {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.total-amount-insert-btn {
+  min-width: 72px;
+}
+
+.unpaid-td-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.unpaid-td-total-amount {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.unpaid-td-update-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.unpaid-td-update-btn {
+  min-width: 64px;
+  height: 30px;
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 0 12px;
+}
+
+/* 페이징 */
+.billing-paging-area,
+.payment-paging-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.billing-paging-area button,
+.payment-paging-area button {
+  min-width: 72px;
+  height: 36px;
+  border: 1px solid #cfd8e3;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.billing-paging-area button:hover:not(:disabled),
+.payment-paging-area button:hover:not(:disabled) {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.billing-paging-area button:disabled,
+.payment-paging-area button:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+.billing-paging-area span,
+.payment-paging-area span {
+  min-width: 52px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+/* 결제 모달 */
+.payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.payment-modal-inner {
+  width: 100%;
+  max-width: 460px;
+}
+
+.payment-modal-body {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #dbe4f0;
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.22);
+  overflow: hidden;
+}
+
+.payment-modal-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 14px 16px 0 16px;
+}
+
+.payment-modal-close-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #475569;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.payment-modal-close-btn:hover {
+  background: #dbe4f0;
+  color: #1e293b;
+}
+
+.payment-modal-main {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 8px 24px 24px 24px;
+}
+
+.payment-modal-main > div:first-child {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.payment-modal-main p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #334155;
+}
+
+.payment-modal-main p:last-child {
+  margin-bottom: 0;
+}
+
+.payment-modal-main b {
+  display: inline-block;
+  min-width: 62px;
+  color: #0f172a;
+}
+
+.payment-modal-main input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #cfd8e3;
+  border-radius: 10px;
+  padding: 0 14px;
+  background: #ffffff;
+  font-size: 14px;
+  color: #1e293b;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-modal-main input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.payment-modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 0 24px 24px 24px;
+}
+
+.cash-btn,
+.card-btn {
+  min-width: 104px;
+  height: 42px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+.cash-btn {
+  border: 1px solid #cfd8e3;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.cash-btn:hover:not(:disabled) {
+  background: #eef2f7;
+}
+
+.card-btn {
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.card-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.cash-btn:active:not(:disabled),
+.card-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.cash-btn:disabled,
+.card-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 총 금액 입력 모달 */
+.totalAmount-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.totalAmount-modal-inner {
+  width: 100%;
+  max-width: 420px;
+}
+
+.totalAmount-modal-box {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 18px;
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.22);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.totalAmount-modal-header {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.input-amount-area {
+  margin-bottom: 20px;
+}
+
+.input-amount-area input {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #cfd8e3;
+  border-radius: 10px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-amount-area input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.totalAmount-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.totalAmount-modal-footer button {
+  min-width: 90px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+.totalAmount-modal-close-btn {
+  border: 1px solid #cfd8e3;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.totalAmount-modal-close-btn:hover:not(:disabled) {
+  background: #eef2f7;
+}
+
+.totalAmount-modal-footer button:last-child {
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.totalAmount-modal-footer button:last-child:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.totalAmount-modal-footer button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.totalAmount-modal-footer button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* loading / error text */
+.billing-list > div,
+.payment-list > div {
+  box-sizing: border-box;
+}
+
+/* responsive */
+@media (max-width: 1200px) {
+  .Billing-Component {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .Billing-Layout {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .Billing-Search-Area,
+  .billing-list,
+  .payment-list {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .search-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-form button {
+    width: 100%;
+  }
+
+  .billing-table {
+    min-width: 640px;
+  }
+
+  .payment-modal-main,
+  .payment-modal-footer {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .payment-modal-footer,
+  .totalAmount-modal-footer {
+    flex-direction: column;
+  }
+
+  .cash-btn,
+  .card-btn,
+  .totalAmount-modal-footer button {
+    width: 100%;
+  }
+
+  .totalAmount-modal-box {
+    padding: 20px 18px;
+  }
+
+  .totalAmount-modal-header {
+    font-size: 15px;
+  }
+}

@@ -1,0 +1,28 @@
+.fc .fc-daygrid-day-frame {
+  min-height: 110px !important;
+  max-height: 110px !important;
+  overflow: hidden !important;
+}
+
+.fc .fc-daygrid-day-events {
+  max-height: 72px !important;
+  overflow: hidden !important;
+}
+
+.fc .fc-daygrid-event {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 12px !important;
+  display: block !important;
+}
+
+.fc .fc-daygrid-block-event .fc-event-title {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.fc .fc-scrollgrid-sync-inner {
+  overflow: hidden !important;
+}

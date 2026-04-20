@@ -1,0 +1,308 @@
+.join-panel {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+  box-sizing: border-box;
+}
+
+.join-area {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.join-form-box {
+  background: #ffffff;
+  border: 1px solid #dbe7f3;
+  border-radius: 22px;
+  box-shadow: 0 20px 45px rgba(37, 99, 235, 0.08);
+  overflow: hidden;
+}
+
+.join-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 36px 32px;
+}
+
+.join-form::before {
+  content: "회원 가입";
+  display: block;
+  margin-bottom: 8px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #edf3f8;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.email-box,
+.rrn-box {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 116px;
+  gap: 12px;
+  align-items: center;
+}
+
+.password-box,
+.checkedPwd-box,
+.name-box,
+.phone-box,
+.address-box,
+.gender-box,
+.blood-box,
+.height-box,
+.weight-box {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.email-box label,
+.rrn-box label,
+.password-box label,
+.checkedPwd-box label,
+.name-box label,
+.phone-box label,
+.address-box label,
+.gender-box label,
+.blood-box label,
+.height-box label,
+.weight-box label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  word-break: keep-all;
+}
+
+.email-box input,
+.rrn-box input,
+.password-box input,
+.checkedPwd-box input,
+.name-box input,
+.phone-box input,
+.address-box input,
+.gender-box select,
+.blood-box select,
+.height-box select,
+.weight-box select {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #cfddea;
+  border-radius: 12px;
+  background: #f8fbff;
+  font-size: 15px;
+  color: #1e293b;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.email-box input::placeholder,
+.rrn-box input::placeholder,
+.password-box input::placeholder,
+.checkedPwd-box input::placeholder,
+.name-box input::placeholder,
+.phone-box input::placeholder,
+.address-box input::placeholder {
+  color: #94a3b8;
+}
+
+.email-box input:focus,
+.rrn-box input:focus,
+.password-box input:focus,
+.checkedPwd-box input:focus,
+.name-box input:focus,
+.phone-box input:focus,
+.address-box input:focus,
+.gender-box select:focus,
+.blood-box select:focus,
+.height-box select:focus,
+.weight-box select:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.email-box button,
+.rrn-box button {
+  height: 46px;
+  border: none;
+  border-radius: 12px;
+  background: #e8f0fe;
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.email-box button:hover,
+.rrn-box button:hover {
+  background: #dbeafe;
+}
+
+.email-box button:disabled,
+.rrn-box button:disabled {
+  background: #e5e7eb;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.error-box,
+.check-result-box,
+.check-password-box {
+  margin-top: -8px;
+  padding-left: 122px;
+}
+
+.error-text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.45;
+}
+
+.check-result {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2563eb;
+  line-height: 1.45;
+}
+
+.check-password-text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.check-password-text.success {
+  color: #2563eb;
+}
+
+.check-password-text.fail {
+  color: #dc2626;
+}
+
+.submit-box {
+  margin-top: 10px;
+  padding-top: 22px;
+  border-top: 1px solid #edf3f8;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px rgba(37, 99, 235, 0.24);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.gender-box select,
+.blood-box select,
+.height-box select,
+.weight-box select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 38px;
+}
+
+@media (max-width: 768px) {
+  .join-panel {
+    padding: 20px 14px;
+  }
+
+  .join-form-box {
+    border-radius: 18px;
+  }
+
+  .join-form {
+    padding: 26px 18px;
+    gap: 16px;
+  }
+
+  .join-form::before {
+    font-size: 24px;
+    margin-bottom: 4px;
+    padding-bottom: 16px;
+  }
+
+  .email-box,
+  .rrn-box,
+  .password-box,
+  .checkedPwd-box,
+  .name-box,
+  .phone-box,
+  .address-box,
+  .gender-box,
+  .blood-box,
+  .height-box,
+  .weight-box {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .email-box button,
+  .rrn-box button,
+  .email-box input,
+  .rrn-box input,
+  .password-box input,
+  .checkedPwd-box input,
+  .name-box input,
+  .phone-box input,
+  .address-box input,
+  .gender-box select,
+  .blood-box select,
+  .height-box select,
+  .weight-box select {
+    height: 44px;
+  }
+
+  .error-box,
+  .check-result-box,
+  .check-password-box {
+    margin-top: -4px;
+    padding-left: 0;
+  }
+
+  .submit-box {
+    margin-top: 6px;
+    padding-top: 18px;
+  }
+
+  .submit-btn {
+    height: 48px;
+    font-size: 15px;
+  }
+}

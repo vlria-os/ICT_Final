@@ -1,0 +1,242 @@
+.bulk-upload {
+  width: 860px;
+  max-width: 100%;
+  font-family: inherit;
+}
+
+/* 헤더 */
+.bulk-upload__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bulk-upload__title {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.bulk-upload__close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #888;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.bulk-upload__close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.bulk-upload__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 드롭존 */
+.bulk-upload__dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fafafa;
+}
+
+.bulk-upload__dropzone:hover,
+.bulk-upload__dropzone--dragging {
+  border-color: #1D9E75;
+  background: #f0faf6;
+}
+
+.bulk-upload__dropzone-icon {
+  display: block;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.bulk-upload__dropzone p {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+}
+
+.bulk-upload__dropzone-sub {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+  display: block;
+}
+
+/* 파일명 */
+.bulk-upload__filename {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+/* 통계 카드 */
+.bulk-upload__stats {
+  display: flex;
+  gap: 10px;
+}
+
+.stat-card {
+  flex: 1;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-card__label {
+  font-size: 11px;
+  color: #888;
+}
+
+.stat-card__value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.stat-card__value--green { color: #3B6D11; }
+.stat-card__value--red   { color: #A32D2D; }
+
+/* 경고 */
+.bulk-upload__warning {
+  background: #FAEEDA;
+  border: 1px solid #EF9F27;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #854F0B;
+}
+
+/* 테이블 */
+.bulk-upload__table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.bulk-upload__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.bulk-upload__table thead {
+  position: sticky;
+  top: 0;
+  background: #f9f9f9;
+  z-index: 1;
+}
+
+.bulk-upload__table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  white-space: nowrap;
+  border-bottom: 1px solid #eee;
+}
+
+.bulk-upload__table td {
+  padding: 8px 12px;
+  color: #333;
+  white-space: nowrap;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bulk-upload__table tbody tr:hover {
+  background: #fafafa;
+}
+
+.row--error {
+  background: #FFF8F0 !important;
+}
+
+.td--ellipsis {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.td--error {
+  color: #A32D2D;
+}
+
+/* 배지 */
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.badge--green { background: #EAF3DE; color: #3B6D11; }
+.badge--red   { background: #FCEBEB; color: #A32D2D; }
+.badge--amber { background: #FAEEDA; color: #854F0B; }
+
+/* 섹션 레이블 */
+.bulk-upload__section-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* 버튼 */
+.bulk-upload__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.btn {
+  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s;
+}
+
+.btn--outline {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.btn--outline:hover {
+  background: #f5f5f5;
+}
+
+.btn--primary {
+  background: #111;
+  border: none;
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: #333;
+}
+
+.btn--primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
