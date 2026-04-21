@@ -12,3 +12,6 @@ pip install langchain-chroma
 pip install langchain-text-splitters
 pip install python-multipart
 pip install tzdata
+pip install langchain-community
+pip install faiss-cpu
+pip install sqlalchemy
