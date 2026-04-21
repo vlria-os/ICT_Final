@@ -154,21 +154,22 @@ def date_node(state: ChatbotState) -> ChatbotState:
                 "resolved_date_range": None
             }
             
-        if decision.resolution_type=="EXACT_DATE":
+        if decision.resolution_type == "EXACT_DATE" and decision.resolved_date:
+            parsed_date=datetime.fromisoformat(decision.resolved_date).date()
+            
+            if parsed_date.weekday() == 6:
+                return {
+                    "has_date_expression": True,
+                    "resolved_date": decision.resolved_date,
+                    "resolved_date_range": None,
+                    "final_answer": "일요일은 진료하지 않습니다.",
+                    "source_type": "NONE"
+                }
+                
             return {
                 "has_date_expression": True,
                 "resolved_date": decision.resolved_date,
-                "resolved_date_range": None,
-            }
-            
-        if decision.resolution_type == "DATE_RANGE":
-            return {
-                "has_date_expression": True,
-                "resolved_date": None,
-                "resolved_date_range": {
-                    "start_date": decision.start_date,
-                    "end_date": decision.end_date,
-                },
+                "resolved_date_range": None
             }
 
         if decision.resolution_type == "AMBIGUOUS":

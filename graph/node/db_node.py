@@ -1,7 +1,11 @@
 from graph.state import ChatbotState
 from service.spring_api_service import SpringApiService
+from datetime import datetime
 
 spring_api_service=SpringApiService()
+
+def _is_sunday(date_str: str) -> bool:
+    return datetime.fromisoformat(date_str).weekday() == 6
 
 def db_node(state: ChatbotState) -> ChatbotState:
     source_type=state.get("source_type")
@@ -15,6 +19,12 @@ def db_node(state: ChatbotState) -> ChatbotState:
     
     if source_type not in ["DB", "BOTH"]:
         return {
+            "db_result": None
+        }
+    
+    if resolved_date and _is_sunday(resolved_date):
+        return {
+            "final_answer": "일요일은 진료하지 않습니다.",
             "db_result": None
         }
         

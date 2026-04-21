@@ -26,6 +26,7 @@ ANSWER_SYSTEM_PROMPT="""
 """.strip()
 
 def answer_node(state: ChatbotState) -> ChatbotState:
+    final_answer=state.get("final_answer")
     allowed_status=state.get("allowed_status")
     block_reason=state.get("block_reason")
     
@@ -37,6 +38,11 @@ def answer_node(state: ChatbotState) -> ChatbotState:
     if allowed_status == "NEEDS_CLARIFICATION":
         return {
             "answer": block_reason or "질문이 구체적이지 않아 답변할 수 없습니다. 다시 질문해 주세요."
+        }
+        
+    if final_answer:
+        return {
+            "answer": final_answer
         }
         
     user_question=state.get("normalized_question") or state.get("user_question", "")

@@ -82,4 +82,5 @@ class ChatbotState(TypedDict, total=False):
     warnings: List[str]
     
     #최종 출력
+    final_answer: Optional[str]
     answer: Optional[str]

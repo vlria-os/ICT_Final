@@ -19,8 +19,12 @@ def route_after_policy(state: ChatbotState) -> str:
 
 def route_after_date(state: ChatbotState) -> str:
     allowed_status=state.get("allowed_status")
+    final_answer=state.get("final_answer")
     
     if allowed_status == "NEEDS_CLARIFICATION":
+        return "answer_node"
+    
+    if final_answer:
         return "answer_node"
     
     return "extract_node"
