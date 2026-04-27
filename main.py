@@ -391,6 +391,34 @@ def build_prompt_text(data: AiScheduleInputDto) -> str:
         while cur <= data.endDate:
             date_range.append(cur.isoformat())
             cur += timedelta(days=1)
+            
+    # 의사일 경우 토요일/일요일 자동조건 추가
+    auto_conditions = []
+    if data.jobType and data.jobType.strip().upper() == "DOCTOR" and data.staffList:
+        for d in date_range:
+            day = date.fromisoformat(d)
+            for staff in data.staffList:
+                if day.weekday()==6:
+                    auto_conditions.append(
+                        AiManualConditionDto(
+                            staffId=staff.get("staffId"),
+                            staffName=staff.get("staffName"),
+                            workDate=d,
+                            type="OFF",
+                            mode=None
+                        )
+                    )
+                elif day.weekday()==5:
+                    auto_conditions.append(
+                        AiManualConditionDto(
+                            staffId=staff.get("staffId"),
+                            staffName=staff.get("staffName"),
+                            workDate=d,
+                            type="FIXED_SHIFT",
+                            mode="SAT_MORNING"
+                        )
+                    )
+    all_conditions = (data.manualConditionList or []) + auto_conditions
 
     if data.staffList:
         staff_lines = "".join(f"{s}\n" for s in data.staffList)
@@ -401,9 +429,9 @@ def build_prompt_text(data: AiScheduleInputDto) -> str:
         "".join(
             f"staffId={m.staffId}, staffName={m.staffName}, "
             f"workDate={m.workDate}, type={m.type}, mode={m.mode}\n"
-            for m in data.manualConditionList
+            for m in all_conditions
         )
-        if data.manualConditionList else "(없음)\n"
+        if all_conditions else "(없음)\n"
     )
 
     rules_lines = "".join(f"{r}\n" for r in data.rules) if data.rules else "(없음)\n"
@@ -438,7 +466,14 @@ def build_prompt_text(data: AiScheduleInputDto) -> str:
 1. 모든 직원은 기간 내 매일 반드시 하나의 shiftType 또는 "OFF"를 가져야 합니다.
 2. 수동 조건(manualConditionList)이 있으면 반드시 우선 적용하세요.
 3. 각 근무 타입별 최소 인원(minStaffMap)을 매일 충족해야 합니다.
-4. rules 항목을 최대한 준수하세요."""
+4. rules 항목을 최대한 준수하세요.
+
+중요 지시사항:
+- DAY/EVENING/NIGHT 각 근무 타입별로 매일 반드시 minStaffMap에 명시된 최소 인원 이상을 배정하세요.
+- 예를 들어 minStaffMap이 {{"DAY": 3}} 이면 매일 DAY 근무자가 최소 3명이어야 합니다.
+- OFF로만 채우지 말고 반드시 각 shiftType을 골고루 배정하세요.
+- shiftType은 반드시 {shift_types_text} 중 하나 또는 "OFF" 여야 합니다.
+"""
 
 
 # 스케줄 생성 엔드포인트 
@@ -452,7 +487,7 @@ async def generate_schedule(input_data: AiScheduleInputDto):
     try:
         llm = ChatOpenAI(
             model="gpt-4o-mini",
-            temperature=0.2,
+            temperature=0.5,
             api_key=api_key,
         )
 
