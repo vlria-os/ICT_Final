@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,11 @@ public class StaffScheduleService {
     public Integer register(StaffScheduleDto dto){
         Staff staff=staffRepository.findById(dto.getStaffId())
                 .orElseThrow(()->new EntityNotFoundException("존재하지 않는 직원입니다."));
+
+        //의사 토요일/일요일 체크 추가
+        validateDoctorDayRestriction(staff, dto.getWorkDate(), staffScheduleTypeRepository
+                .findById(dto.getScheduleTypeId())
+                .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 근무 유형입니다")));
 
         if (Boolean.FALSE.equals(staff.getIsActive())){
             throw new IllegalStateException("비활성 직원은 스케줄을 배정할 수 없습니다");
@@ -76,7 +82,18 @@ public class StaffScheduleService {
                 .status(dto.getStatus())
                 .build();
     }
+    private void validateDoctorDayRestriction(Staff staff, LocalDate workDate, StaffScheduleType type){
+        if (!"DOCTOR".equalsIgnoreCase(staff.getPosition())) return;
 
+        DayOfWeek day=workDate.getDayOfWeek();
+
+        if(day == DayOfWeek.SUNDAY){
+            throw new IllegalStateException("의사는 일요일 근무(진료) 등록이 불가입니다");
+        }
+        if(day == DayOfWeek.SATURDAY && !"SAT_MORNING".equalsIgnoreCase(type.getTypeCode())){
+            throw new IllegalStateException("의사는 토요일 오전근무(SAT_MORNING)만 가능합니다");
+        }
+    }
     //전체조회 (페이징 + 직원/날짜 필터)
     public Page<StaffScheduleDto> selectAll(Integer staffId, LocalDate startDate, LocalDate endDate, Pageable pageable){
         return staffScheduleRepository.findAllWithFilter(staffId, startDate, endDate, pageable)
@@ -91,6 +108,7 @@ public class StaffScheduleService {
                 .scheduleTypeId(entity.getStaffScheduleType().getScheduleTypeId())
                 .typeCode(entity.getStaffScheduleType().getTypeCode())
                 .typeName(entity.getStaffScheduleType().getTypeName())
+                .startTime(entity.getStaffScheduleType().getStartTime())
                 .departmentId(entity.getStaff().getDepartment().getDepartmentId())
                 .departmentName(entity.getStaff().getDepartment().getDepartmentName())
                 .status(entity.getStatus())
@@ -135,6 +153,8 @@ public class StaffScheduleService {
         }
 
         validateNightPattern(dto.getStaffId(), dto.getWorkDate(), null, staffScheduleType);
+        //의사 토요일/일요일 체크 추가
+        validateDoctorDayRestriction(staff, dto.getWorkDate(), staffScheduleType);
         staffSchedule.setStaff(staff);
         staffSchedule.setWorkDate(dto.getWorkDate());
         staffSchedule.setStaffScheduleType(staffScheduleType);
@@ -225,6 +245,21 @@ public class StaffScheduleService {
                 try {
                     validateNightPattern(staff.getStaffId(), currentDate, null, staffScheduleType);
                 } catch (IllegalStateException e) {
+                    skippedCount++;
+                    skippedList.add(
+                            SkippedScheduleDto.builder()
+                                    .staffId(staff.getStaffId())
+                                    .staffName(staff.getName())
+                                    .workDate(currentDate)
+                                    .reason(e.getMessage())
+                                    .build()
+                    );
+                    continue;
+                }
+                // 의사 토요일/일요일 체크 추가
+                try{
+                    validateDoctorDayRestriction(staff, currentDate, staffScheduleType);
+                }catch (IllegalStateException e){
                     skippedCount++;
                     skippedList.add(
                             SkippedScheduleDto.builder()

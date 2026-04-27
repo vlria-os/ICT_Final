@@ -44,15 +44,6 @@ public class SurgeryService {
         LocalTime requestStart = dto.getStartTime().toLocalTime();
         LocalTime requestEnd = endTime.toLocalTime();
 
-        if(!availabilityService.isStaffAvailable(
-                doctor.getStaffId(),
-                workDate,
-                requestStart,
-                requestEnd
-        )){
-            throw new IllegalStateException("해당 의사의 근무시간이 아닙니다");
-        }
-
         // startTime ~ endTime 각 시간대 충돌 체크 (점유 중인 슬롯만)
         LocalDateTime current = dto.getStartTime();
         while (current.isBefore(endTime)) {
