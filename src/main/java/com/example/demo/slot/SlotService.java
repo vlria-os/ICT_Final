@@ -250,8 +250,6 @@ public class SlotService {
                 String key = d + "_" + hour;
                 Integer remain = slotMap.get(key);
 
-                System.out.println("KEY: " + key + " / exist: " + slotMap.containsKey(key));
-
                 if (slotMap.containsKey(key)) {
                     totalCapacity += slotMap.get(key);
                 } else {

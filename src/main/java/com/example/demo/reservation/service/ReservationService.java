@@ -129,13 +129,13 @@ public class ReservationService {
         Integer userId=staff.getUser().getUserId();
         System.out.println("SSE 전송할 userId ===> " + userId);
 
-//        Patient patient=patientRepository.findById(reservationDto.getPatientId())
-//                .orElseThrow(() -> new RuntimeException("Not exist"));
+        Patient patient=patientRepository.findById(reservationDto.getPatientId())
+                .orElseThrow(() -> new RuntimeException("Not exist"));
         ReservationSSEResponse reservationSSEResponse= ReservationSSEResponse.builder()
                 .reservationId(reservationDto.getReservationId())
                 .reservationDate(reservationDto.getReservationDate())
                 .patientId(reservationDto.getPatientId())
-                .patientName("Peter")
+                .patientName(patient.getName())
                 .build();
 
         System.out.println("이벤트 리스너 바로 직전");
