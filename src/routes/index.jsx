@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import MainLayout from "../layout/MainLayout";
 import AdminPage from "../pages/admin/AdminPage";
@@ -33,6 +33,14 @@ const MEDICAL_ROLES = [
   "CHARGE_NURSE", "HEAD_NURSE", "DIRECTOR_NURSE",
 ];
 
+const PrivateRoute = () => {
+  const accessToken = sessionStorage.getItem("accessToken");
+  if (!accessToken) {
+    return <Navigate to="/login" replace />;
+  }
+  return <Outlet />;
+};
+
 const RoleBasedHome = () => {
   const token = sessionStorage.getItem("accessToken");
   if (token) {
@@ -56,30 +64,34 @@ const Router = () => {
         <Route path="/" element={<RoleBasedHome />} />
 
         <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/patient" element={<PatientPage />} />
-          <Route path="/reservation" element={<ReservationPage />} />
-          <Route path="/reservationconfirm" element={<ReservationConfirm />} />
-          <Route path="/reception" element={<ReceptionPage />} />
-          <Route path="/medical" element={<MedicalRecordPage />} />
-          <Route path="/billing" element={<BillingLayout/>} />
-          <Route path="/staff" element={<StaffPage />} />
-          <Route path="/department" element={<DepartmentPage/>}/>
-          <Route path="/operation/schedule_policy" element={<Schedule_policyPage/>}/>
-          <Route path="/operation/dept_schedule_policy" element={<DepartmentSchedulePolicyPage/>}/>
-          <Route path="/staff_schedule" element={<StaffSchedulePage/>}/>
-          <Route path="/my-schedule" element={<MySchedulePage/>}/>
-          <Route path="/admin" element={<AdminPage />} />
-          {/* <Route path="/statistics" element={<StatisticsPage />} /> */}
+          {/* 로그인 없이 접근 가능한 공개 페이지 */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/join" element={<JoinPage />} />
+          <Route path="/social/login/naver" element={<NaverJoin />} />
+          <Route path="/social/login/kakao" element={<KakaoJoin />} />
+          <Route path="/inquiry/chatbot" element={<InquiryChatBotPage />} />
           <Route path="/communication" element={<CommunicationPage />} />
-          <Route path="/notification" element={<NotificationPage />} />
-          <Route path="/login" element={<LoginPage/>}/>
-          <Route path="/chat" element={<ChatLayout/>}/>
-          <Route path="/inquiry/chatbot" element={<InquiryChatBotPage/>}/>
-          <Route path="/join" element={<JoinPage/>} />
-          <Route path="/social/login/naver" element={<NaverJoin/>}/>
-          <Route path="/social/login/kakao" element={<KakaoJoin/>}/>
-          <Route path="/surgery" element={<SurgerySchedulePage/>}/>
+
+          {/* 로그인 필요한 페이지 */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/patient" element={<PatientPage />} />
+            <Route path="/reservation" element={<ReservationPage />} />
+            <Route path="/reservationconfirm" element={<ReservationConfirm />} />
+            <Route path="/reception" element={<ReceptionPage />} />
+            <Route path="/medical" element={<MedicalRecordPage />} />
+            <Route path="/billing" element={<BillingLayout />} />
+            <Route path="/staff" element={<StaffPage />} />
+            <Route path="/department" element={<DepartmentPage />} />
+            <Route path="/operation/schedule_policy" element={<Schedule_policyPage />} />
+            <Route path="/operation/dept_schedule_policy" element={<DepartmentSchedulePolicyPage />} />
+            <Route path="/staff_schedule" element={<StaffSchedulePage />} />
+            <Route path="/my-schedule" element={<MySchedulePage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/notification" element={<NotificationPage />} />
+            <Route path="/chat" element={<ChatLayout />} />
+            <Route path="/surgery" element={<SurgerySchedulePage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
